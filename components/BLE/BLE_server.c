@@ -369,11 +369,11 @@ static void gatts_profile_HR_event_handler(esp_gatts_cb_event_t event, esp_gatt_
                 ESP_LOGE(GATTS_TAG, "create attribute table failed, error code=0x%x", param->add_attr_tab.status);
             }
             else if (param->add_attr_tab.num_handle != HRTotalIdx){
-                ESP_LOGE(GATTS_TAG, "create attribute table abnormally, num_handle (%d) \
+                ESP_LOGE(GATTS_TAG, "create attribute table abnormally, num_handle (%u) \
                         doesn't equal to HRTotalIdx(%d)", param->add_attr_tab.num_handle, HRTotalIdx);
             }
             else {
-                ESP_LOGI(GATTS_TAG, "create attribute table successfully, the number handle = %d\n",param->add_attr_tab.num_handle);
+                ESP_LOGI(GATTS_TAG, "create attribute table successfully, the number handle = %u\n",param->add_attr_tab.num_handle);
                 memcpy(heart_rate_handle_table, param->add_attr_tab.handles, sizeof(heart_rate_handle_table));
                 esp_ble_gatts_start_service(heart_rate_handle_table[HRServiceIdx]);
             }
@@ -381,14 +381,14 @@ static void gatts_profile_HR_event_handler(esp_gatts_cb_event_t event, esp_gatt_
         }
         
         case ESP_GATTS_START_EVT:{
-            ESP_LOGI(GATTS_TAG, "SERVICE_START_EVT, status %d, service_handle %d", param->start.status, param->start.service_handle);
+            ESP_LOGI(GATTS_TAG, "SERVICE_START_EVT, status %d, service_handle %u", param->start.status, param->start.service_handle);
             break;
         }
         
         case ESP_GATTS_WRITE_EVT:{
             if (!param->write.is_prep){
                 // the data length of gattc write  must be less than GATTS_DEMO_CHAR_VAL_LEN_MAX.
-                ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, handle = %d, value len = %d, value :", param->write.handle, param->write.len);
+                ESP_LOGI(GATTS_TAG, "GATT_WRITE_EVT, handle = %u, value len = %u, value :", param->write.handle, param->write.len);
                 esp_log_buffer_hex(GATTS_TAG, param->write.value, param->write.len);
                 if (heart_rate_handle_table[HRCCCIdx] == param->write.handle && param->write.len == 2){
                     uint16_t descr_value = param->write.value[1]<<8 | param->write.value[0];
@@ -432,12 +432,12 @@ static void gatts_profile_HR_event_handler(esp_gatts_cb_event_t event, esp_gatt_
         }
         
         case ESP_GATTS_MTU_EVT:{
-            ESP_LOGI(GATTS_TAG, "ESP_GATTS_MTU_EVT, MTU %d", param->mtu.mtu);
+            ESP_LOGI(GATTS_TAG, "ESP_GATTS_MTU_EVT, MTU %u", param->mtu.mtu);
             break;
         }
         
         case ESP_GATTS_READ_EVT:{
-            ESP_LOGI(GATTS_TAG, "GATT_READ_EVT, conn_id %d, trans_id %d, handle %d\n", param->read.conn_id, param->read.trans_id, param->read.handle);
+            ESP_LOGI(GATTS_TAG, "GATT_READ_EVT, conn_id %u, trans_id %lu, handle %u\n", param->read.conn_id, param->read.trans_id, param->read.handle);
             break;
         }
         
@@ -450,7 +450,7 @@ static void gatts_profile_HR_event_handler(esp_gatts_cb_event_t event, esp_gatt_
          }
         
         case ESP_GATTS_CONNECT_EVT:{
-            ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONNECT_EVT, conn_id = %d", param->connect.conn_id);
+            ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONNECT_EVT, conn_id = %u", param->connect.conn_id);
             esp_log_buffer_hex(GATTS_TAG, param->connect.remote_bda, 6);
             esp_ble_conn_update_params_t conn_params = {0};
             memcpy(conn_params.bda, param->connect.remote_bda, sizeof(esp_bd_addr_t));
@@ -466,7 +466,7 @@ static void gatts_profile_HR_event_handler(esp_gatts_cb_event_t event, esp_gatt_
          }
         
         case ESP_GATTS_CONF_EVT:{
-            ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONF_EVT, status %d attr_handle %d", param->conf.status, param->conf.handle);
+            ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONF_EVT, status %d attr_handle %u", param->conf.status, param->conf.handle);
             if (param->conf.status != ESP_GATT_OK){
                 esp_log_buffer_hex(GATTS_TAG, param->conf.value, param->conf.len);
             }
@@ -502,11 +502,11 @@ static void gatts_profile_BAT_event_handler(esp_gatts_cb_event_t event, esp_gatt
                 ESP_LOGE(GATTS_TAG, "create attribute table failed, error code=0x%x", param->add_attr_tab.status);
             }
             else if (param->add_attr_tab.num_handle != BATTotalIdx){
-                ESP_LOGE(GATTS_TAG, "create attribute table abnormally, num_handle (%d) \
+                ESP_LOGE(GATTS_TAG, "create attribute table abnormally, num_handle (%u) \
                         doesn't equal to BATTotalIdx(%d)", param->add_attr_tab.num_handle, BATTotalIdx);
             }
             else {
-                ESP_LOGI(GATTS_TAG, "create attribute table successfully, the number handle = %d\n",param->add_attr_tab.num_handle);
+                ESP_LOGI(GATTS_TAG, "create attribute table successfully, the number handle = %u\n",param->add_attr_tab.num_handle);
                 memcpy(battery_handle_table, param->add_attr_tab.handles, sizeof(battery_handle_table));
                 esp_ble_gatts_start_service(battery_handle_table[BATServiceIdx]);
             }
@@ -514,7 +514,7 @@ static void gatts_profile_BAT_event_handler(esp_gatts_cb_event_t event, esp_gatt
         }
         
         case ESP_GATTS_START_EVT:{
-            ESP_LOGI(GATTS_TAG, "SERVICE_START_EVT, status %d, service_handle %d", param->start.status, param->start.service_handle);
+            ESP_LOGI(GATTS_TAG, "SERVICE_START_EVT, status %d, service_handle %u", param->start.status, param->start.service_handle);
             break;
         }
         
@@ -565,7 +565,7 @@ static void gatts_profile_BAT_event_handler(esp_gatts_cb_event_t event, esp_gatt
         }
 
         case ESP_GATTS_READ_EVT:{
-            ESP_LOGI(GATTS_TAG, "GATT_READ_EVT, conn_id %d, trans_id %d, handle %d\n", param->read.conn_id, param->read.trans_id, param->read.handle);
+            ESP_LOGI(GATTS_TAG, "GATT_READ_EVT, conn_id %u, trans_id %lu, handle %u\n", param->read.conn_id, param->read.trans_id, param->read.handle);
             break;
         }
 
@@ -576,7 +576,7 @@ static void gatts_profile_BAT_event_handler(esp_gatts_cb_event_t event, esp_gatt
         }
         
         case ESP_GATTS_CONNECT_EVT:{
-            ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONNECT_EVT, conn_id = %d", param->connect.conn_id);
+            ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONNECT_EVT, conn_id = %u", param->connect.conn_id);
             esp_log_buffer_hex(GATTS_TAG, param->connect.remote_bda, 6);
             esp_ble_conn_update_params_t conn_params = {0};
             memcpy(conn_params.bda, param->connect.remote_bda, sizeof(esp_bd_addr_t));
@@ -600,7 +600,7 @@ static void gatts_profile_BAT_event_handler(esp_gatts_cb_event_t event, esp_gatt
         }
         
         case ESP_GATTS_CONF_EVT:{
-            ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONF_EVT, status %d attr_handle %d", param->conf.status, param->conf.handle);
+            ESP_LOGI(GATTS_TAG, "ESP_GATTS_CONF_EVT, status %d attr_handle %u", param->conf.status, param->conf.handle);
             if (param->conf.status != ESP_GATT_OK){
                 esp_log_buffer_hex(GATTS_TAG, param->conf.value, param->conf.len);
             }
@@ -678,7 +678,7 @@ static void gap_event_handler(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param
     }
     
     case ESP_GAP_BLE_UPDATE_CONN_PARAMS_EVT:{
-         ESP_LOGI(GATTS_TAG, "update connection params status = %d, min_int = %d, max_int = %d,conn_int = %d,latency = %d, timeout = %d",
+         ESP_LOGI(GATTS_TAG, "update connection params status = %d, min_int = %u, max_int = %u,conn_int = %u,latency = %u, timeout = %u",
                   param->update_conn_params.status,
                   param->update_conn_params.min_int,
                   param->update_conn_params.max_int,
@@ -750,8 +750,6 @@ void BLE_init()
         ESP_LOGE(GATTS_TAG, "%s enable controller failed: %s\n", __func__, esp_err_to_name(ret));
         return;
     }
-    
-    ESP_ERROR_CHECK(esp_bt_controller_mem_release(ESP_BT_MODE_CLASSIC_BT));
 
     ret = esp_bluedroid_init();
     if (ret) {

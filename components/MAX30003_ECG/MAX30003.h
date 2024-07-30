@@ -1,5 +1,5 @@
 /**
- * @brief MADE BY TRUONG MINH KHOA
+ * @brief MADE BY TRUONG MINH KHOAb
  * Spirit boi
  * 
  */

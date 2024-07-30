@@ -160,26 +160,26 @@ void MAX30003_check_ETAG(unsigned int ECG_Data)
     switch(ETAG)
     {
         case ETAG_EMPTY:
-        ESP_LOGE("ETAG","Empty data",NULL);
+        ESP_LOGE("ETAG","Empty data");
         break;
         case ETAG_OVERFLOW:
-        ESP_LOGE("ETAG","Overflow",NULL);
+        ESP_LOGE("ETAG","Overflow");
         break;
         case ETAG_VALID:
-        ESP_LOGI("ETAG","Valid",NULL);
+        ESP_LOGI("ETAG","Valid");
         break;
         case ETAG_VALID_EOF:
-        ESP_LOGI("ETAG","Valid EOF",NULL);
+        ESP_LOGI("ETAG","Valid EOF");
         break;
         case ETAG_FAST:
-        ESP_LOGW("ETAG","Fast",NULL);
+        ESP_LOGW("ETAG","Fast");
         break;
         case ETAG_FAST_EOF:
-        ESP_LOGW("ETAG","Fast EOF",NULL);
+        ESP_LOGW("ETAG","Fast EOF");
         break;
         default:
         {
-            ESP_LOGE("ETAG","Invalid ETAG",NULL);
+            ESP_LOGE("ETAG","Invalid ETAG");
         }
         break;
     }

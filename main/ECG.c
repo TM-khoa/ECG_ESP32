@@ -113,8 +113,8 @@ void app_main(void)
     ADC1_init();
     xEvtGr1 = xEventGroupCreate();
     light_sleep_init();
-    gpio_set_level(PIN_SIGNAL,1);
-    vTaskDelay(500/portTICK_RATE_MS);
+    gpio_set_level(PIN_SIGNAL,1); 
+    vTaskDelay(500/portTICK_PERIOD_MS);
     gpio_set_level(PIN_SIGNAL,0);
     xTaskCreate(INTB_handle, "INTB_handle", 4096, NULL, 10,NULL);
     xTaskCreate(BTN_handle, "BTN_handle", 4096, NULL, 8,NULL);
@@ -122,7 +122,7 @@ void app_main(void)
     xTaskCreate(read_battery, "read_battery", 2048, NULL, 7, NULL);
     if(BSCO.isBLEEnable) xEventGroupSetBits(xEvtGr1,EVTB_BLE_ENABLE);
     while (1) {
-        vTaskDelay(500/portTICK_RATE_MS);
+        vTaskDelay(500/portTICK_PERIOD_MS);
     }
 }
 
@@ -134,7 +134,7 @@ static void BTN_handle(void* arg)
         if(ASSERT_BITS(xEvtBVal,EVTB_TASK_BTN)){
             while(gpio_get_level(PIN_BTN)==0){
                 ESP_LOGI("Waiting",".");
-                vTaskDelay(500/portTICK_RATE_MS);
+                vTaskDelay(500/portTICK_PERIOD_MS);
             }
             gpio_set_level(PIN_SIGNAL,1);
             if(ASSERT_BITS(xEvtBVal,EVTB_BLE_CONNECTED)) {
@@ -144,7 +144,7 @@ static void BTN_handle(void* arg)
                 BLE_enable();
                 xEventGroupSetBits(xEvtGr1,EVTB_BLE_ENABLE);
             }
-            vTaskDelay(10/portTICK_RATE_MS);
+            vTaskDelay(10/portTICK_PERIOD_MS);
             gpio_set_level(PIN_SIGNAL,0);
             xEventGroupClearBits(xEvtGr1,EVTB_TASK_BTN);
         }
@@ -209,11 +209,11 @@ static void INTB_handle(void* arg)
                 else{
                     // ESP_LOGI("INTB","check timeout");
                     MAX30003_write(MAX30003_handle,REG_SYNCH_RST,0);
-                    vTaskDelay(1/portTICK_RATE_MS);
+                    vTaskDelay(1/portTICK_PERIOD_MS);
                     if(check_timeout_ms(&t_MAX,MAX_DCLOFF_TIMEOUT,"DCLOFF TIMEOUT")){
                         MAX30003_write(MAX30003_handle,REG_SW_RST,0);
                         gpio_set_level(PIN_SIGNAL,1);
-                        vTaskDelay(3000/portTICK_RATE_MS);
+                        vTaskDelay(3000/portTICK_PERIOD_MS);
                         gpio_set_level(PIN_SIGNAL,0);
                     }
                     break;
@@ -235,7 +235,7 @@ static void esp_check_light_sleep(void* arg)
 EventBits_t xEvtBVal;
     for(;;) {
         // không được cho TicktoWait = 0 vì sẽ check liên tục trong hàm này dẫn tới watchdog timer
-        xEvtBVal = xEventGroupWaitBits(xEvtGr1,EVTB_LIGHT_SLEEP,pdTRUE,pdFALSE,10/portTICK_RATE_MS);
+        xEvtBVal = xEventGroupWaitBits(xEvtGr1,EVTB_LIGHT_SLEEP,pdTRUE,pdFALSE,10/portTICK_PERIOD_MS);
         if(ASSERT_BITS(xEvtBVal,EVTB_LIGHT_SLEEP)
         ){
             gpio_set_level(PIN_SIGNAL,0);
@@ -246,7 +246,7 @@ EventBits_t xEvtBVal;
                 case ESP_SLEEP_WAKEUP_TIMER:{
                     ESP_LOGW("LIGHTWAKE","Timeout");
                     // block this task right here enough time for LED to blink
-                    vTaskDelay(10/portTICK_RATE_MS);
+                    vTaskDelay(10/portTICK_PERIOD_MS);
                     // then break and continue to execute below
                     break;
                 }
@@ -268,9 +268,9 @@ EventBits_t xEvtBVal;
         if(BSCO.isBLEEnable && !BSCO.isConnected){
             xEventGroupClearBits(xEvtGr1,EVTB_BLE_CONNECTED);
             gpio_set_level(PIN_SIGNAL,1);
-            vTaskDelay(100/portTICK_RATE_MS);
+            vTaskDelay(100/portTICK_PERIOD_MS);
             gpio_set_level(PIN_SIGNAL,0);
-            vTaskDelay(100/portTICK_RATE_MS);
+            vTaskDelay(100/portTICK_PERIOD_MS);
             if(check_timeout_ms(&t_BLE,BLE_WAIT_CONNECT_TIMEOUT,"BLE_CONN_TIMEOUT")){
                 gpio_set_level(PIN_SIGNAL,0);
                 xEventGroupClearBits(xEvtGr1,EVTB_BLE_ENABLE);
@@ -292,7 +292,7 @@ EventBits_t xEvtBVal;
             && !ASSERT_BITS(xEvtBVal,EVTB_LIGHT_SLEEP)
             ){
                 // ESP_LOGI("INTB",":1");
-                vTaskDelay(10/portTICK_RATE_MS);
+                vTaskDelay(10/portTICK_PERIOD_MS);
                 xEventGroupSetBits(xEvtGr1,EVTB_TASK_INTB);
             }
             // khi kết nối bluetooth, không thể sleep để wakeup bằng nút nhấn nên phải dùng cách này
@@ -421,12 +421,12 @@ void ADC1_init()
     } else if (ret == ESP_ERR_INVALID_VERSION) {
         ESP_LOGW(TAG, "eFuse not burnt, skip software calibration");
     } else if (ret == ESP_OK) {
-        esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_DEFAULT, 0, &adc1_chars);
+        esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_12, ADC_WIDTH_BIT_DEFAULT, 0, &adc1_chars);
     } else {
         ESP_LOGE(TAG, "Invalid arg");
     }
     ESP_ERROR_CHECK(adc1_config_width(ADC_WIDTH_BIT_DEFAULT));
-    ESP_ERROR_CHECK(adc1_config_channel_atten(ADC1_CHANNEL_4, ADC_ATTEN_DB_11));
+    ESP_ERROR_CHECK(adc1_config_channel_atten(ADC1_CHANNEL_4, ADC_ATTEN_DB_12));
 }
 
 esp_err_t MAX30003_init_device(MAX30003_handle_t *handle)
@@ -489,11 +489,6 @@ esp_err_t MAX30003Config_register_ECG_on(MAX30003_handle_t handle)
         .FAST = MNGR_DYN_FAST_NORMAL,
     };
 
-    gen= {
-        .REG = 0x01,
-        .ULP_LON = 0x02,
-        .FMSTR = 0x03
-        };
     GEN_t gen = {   
         .REG = REG_GEN,
         .ULP_LON = NOT_USE,
@@ -604,107 +599,4 @@ esp_err_t MAX30003Config_register_ULP(MAX30003_handle_t handle)
 }
 
 
-
-
-
-
-
-
-
-esp_err_t MAX30003Config_register_ULP_malloc()
-{
-    ESP_LOGI("Before malloc","%d",esp_get_free_heap_size()); 
-    MAX30003_config_register_t_2 *cfgreg2 = (MAX30003_config_register_t_2*)malloc(sizeof(MAX30003_config_register_t_2));
-    if(!cfgreg2) return ESP_ERR_NO_MEM;
-    cfgreg2->EN_INT.REG.REG_INTB = REG_ENINTB;
-    cfgreg2->EN_INT.E_LON = EN_LONINT;
-    cfgreg2->EN_INT.E_INT_TYPE = EN_INTB_CMOS;
-
-    cfgreg2->GEN.REG = REG_GEN;
-    cfgreg2->GEN.ULP_LON = GEN_EN_ULP_LON;
-    cfgreg2->GEN.FMSTR = GEN_FMSTR_32768_512HZ;
-    cfgreg2->GEN.IPOL = GEN_IPOL_ECGP_PU_ECGN_PD;
-    
-    cfgreg2->CAL.REG = REG_CAL;
-    cfgreg2->CAL.VCAL = NOT_USE;
-    cfgreg2->CAL.VMODE = CAL_VMODE_BIPOLAR;
-    cfgreg2->CAL.VMAG = CAL_VMAG_050mV;
-    cfgreg2->CAL.FCAL = NOT_USE;
-    cfgreg2->CAL.FIFTY = CAL_FIFTY;
-    cfgreg2->CAL.THIGH = NOT_USE;
-    
-    cfgreg2->EMUX.REG = REG_EMUX;
-    cfgreg2->EMUX.OPENN = NOT_USE;
-    cfgreg2->EMUX.OPENP = NOT_USE;
-    cfgreg2->EMUX.CALP = EMUX_CALP_SEL_VCALN;
-    cfgreg2->EMUX.CALN = EMUX_CALN_SEL_VCALP;
-    
-    
-    ESP_LOGI("After malloc","%d",esp_get_free_heap_size()); 
-    free(cfgreg2);
-    ESP_LOGI("After free","%d",esp_get_free_heap_size()); 
-    return ESP_OK;
-}
-
-
-esp_err_t MAX30003Config_register_ECG_on_malloc()
-{
-    ESP_LOGI("Before malloc","%d",esp_get_free_heap_size()); 
-    MAX30003_config_register_t_2 *cfgreg2 = (MAX30003_config_register_t_2*)malloc(sizeof(MAX30003_config_register_t_2));
-    if(!cfgreg2) return ESP_ERR_NO_MEM;
-    cfgreg2->EN_INT.REG.REG_INTB = REG_ENINTB;
-    cfgreg2->EN_INT.E_INT = NOT_USE;
-    cfgreg2->EN_INT.E_OVF = NOT_USE;
-    cfgreg2->EN_INT.E_FS =NOT_USE;
-    cfgreg2->EN_INT.E_DCOFF = EN_DCLOFFINT;
-    cfgreg2->EN_INT.E_LON = EN_LONINT;
-    cfgreg2->EN_INT.E_RR =EN_RRINT;
-    cfgreg2->EN_INT.E_SAMP = NOT_USE;
-    cfgreg2->EN_INT.E_PLL = NOT_USE;
-    cfgreg2->EN_INT.E_INT_TYPE = EN_INTB_CMOS;
-
-    cfgreg2->GEN.REG = REG_GEN;
-    cfgreg2->GEN.ULP_LON = GEN_EN_ULP_LON;
-    cfgreg2->GEN.FMSTR = GEN_FMSTR_32768_512HZ;
-    cfgreg2->GEN.ECG = GEN_EN_ECG;
-    cfgreg2->GEN.DCLOFF = GEN_DCLOFF_EN;
-    cfgreg2->GEN.IPOL = GEN_IPOL_ECGP_PU_ECGN_PD;
-    cfgreg2->GEN.IMAG = GEN_IMAG_100nA;
-    cfgreg2->GEN.VTH = GEN_DCLOFF_VTH_300mV;
-    cfgreg2->GEN.EN_RBIAS = GEN_EN_RBIAS;
-    cfgreg2->GEN.RBIASV = GEN_RBIASV_200MOHM;
-    cfgreg2->GEN.RBIASP = GEN_RBIASP_EN;
-    cfgreg2->GEN.RBIASN = GEN_RBIASN_EN;
-    
-    cfgreg2->CAL.REG = REG_CAL;
-    cfgreg2->CAL.VCAL = NOT_USE;
-    cfgreg2->CAL.VMODE = CAL_VMODE_BIPOLAR;
-    cfgreg2->CAL.VMAG = CAL_VMAG_050mV;
-    cfgreg2->CAL.FCAL = NOT_USE;
-    cfgreg2->CAL.FIFTY = CAL_FIFTY;
-    cfgreg2->CAL.THIGH = NOT_USE;
-    
-    cfgreg2->EMUX.REG = REG_EMUX;
-    cfgreg2->EMUX.OPENN = NOT_USE;
-    cfgreg2->EMUX.OPENP = NOT_USE;
-    cfgreg2->EMUX.CALP = EMUX_CALP_SEL_VCALN;
-    cfgreg2->EMUX.CALN = EMUX_CALN_SEL_VCALP;
-    
-    cfgreg2->ECG.REG = REG_ECG;
-    cfgreg2->ECG.RATE = ECG_RATE_1; // 128sps; FMSTR = 00
-    cfgreg2->ECG.GAIN = ECG_GAIN_160V;
-    cfgreg2->ECG.DHPF = ECG_DHPF_05HZ;
-    cfgreg2->ECG.DLPF = ECG_DLPF_40HZ;
-    
-    cfgreg2->RTOR.REG.RTOR1 = REG_RTOR1;
-    cfgreg2->RTOR.WNDW = RTOR1_WNDW_12;
-    cfgreg2->RTOR.GAIN = RTOR1_GAIN_AUTO;
-    cfgreg2->RTOR.EN = NOT_USE;
-    cfgreg2->RTOR.PAVG = 0;
-    cfgreg2->RTOR.PTSF = (BIT10 | BIT9);
-    ESP_LOGI("After malloc","%d",esp_get_free_heap_size()); 
-    free(cfgreg2);
-    ESP_LOGI("After free","%d",esp_get_free_heap_size()); 
-    return ESP_OK;
-}
 
