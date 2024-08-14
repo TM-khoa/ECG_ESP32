@@ -11,6 +11,8 @@ Checkout demo [video](https://www.youtube.com/watch?v=3KNHkRiR5ps) on youtube.
 
 # Block Diagram
 
+The block diagram of the device includes MCU and multiple peripherals, including Bluetooth Low Energy. Moreover, the diagram shows a USB type C connected to a Lithium battery charger (for battery charging). Two pushbuttons (to turn the device on/off and to start Bluetooth advertising). three LEDs (blue LED to indicate notifications, red LED to indicate power and green LED to indicate charging status)
+
 ![](/Image/CacKhoiGiaoTiep_V2.jpg)
 
 # BLE Profile
