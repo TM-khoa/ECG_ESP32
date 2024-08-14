@@ -1,6 +1,7 @@
 # About this project
 
 This project is an experimental enhanced version of the traditional ECG Holter monitor. It uses the ESP32-C3 as the host controller to capture electrocardiogram (ECG) data from the MAX30003 sensor, which is an ultra-low power, single-channel integrated biopotential AFE with R-to-R detection. The ECG data is transmitted to a mobile app via Bluetooth Low Energy (BLE) communication. The ECG waveforms are also displayed through the Serial Port.
+
 Checkout these [project images](https://drive.google.com/drive/u/0/folders/1xQeitq_eIvYn59nXbosOhv8x5txErQTd) for more information about this project
 
 ![](/Image/CompleteBoard.jpg)
