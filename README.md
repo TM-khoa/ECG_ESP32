@@ -14,7 +14,7 @@ Checkout demo [video](https://www.youtube.com/watch?v=3KNHkRiR5ps) on youtube.
 ![](/Image/CacKhoiGiaoTiep_V2.jpg)
 
 # BLE Profile
-Use 2 UUID 0x180D (Heart Rate Service) và 0x180F(Battery Level Characteristic) to communicate between board and mobile app
+Use 2 UUID 0x180D (Heart Rate Service) và 0x180F (Battery Level Characteristic) to communicate between board and mobile app
 
 ![](/Image/BLE_GATT_DataStructure%20(1).jpg)
 
