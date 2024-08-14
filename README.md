@@ -4,7 +4,7 @@ This project is an experimental enhanced version of the traditional ECG Holter m
 
 Checkout these [project images](https://drive.google.com/drive/u/0/folders/1xQeitq_eIvYn59nXbosOhv8x5txErQTd) for more information about this project
 
-Checkout demo ![video](https://www.youtube.com/watch?v=3KNHkRiR5ps) on youtube.
+Checkout demo [video](https://www.youtube.com/watch?v=3KNHkRiR5ps) on youtube.
 
 ![](/Image/CompleteBoard.jpg)
 
